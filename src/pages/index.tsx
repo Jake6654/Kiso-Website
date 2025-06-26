@@ -9,7 +9,7 @@ import Banner from "@/components/Banner";
 
 export default function Home() {
   return (
-    <>
+    <main className="bg-white">
       <Banner newsArray={mockAnnouncement} />
       <Hero />
       <div className="my-12">
@@ -19,6 +19,6 @@ export default function Home() {
       <MemberBenefits />
       <Map />
       <Form />
-    </>
+    </main>
   );
 }
