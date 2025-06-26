@@ -17,7 +17,7 @@ const MonthlyEvents: React.FC = () => {
   }
 
   return (
-    <section className="bg-white p-6 rounded-lg shadow-md space-y-4">
+    <section className="bg-white p-6 space-y-4">
       <h2 className="text-2xl font-semibold">This Month&apos;s Events</h2>
       <ul className="space-y-3">
         {thisMonthEvents.map((event) => (
