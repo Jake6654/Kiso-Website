@@ -6,6 +6,7 @@ import { format, isSameMonth } from "date-fns";
 import EventCard from "./EventCard";
 
 const MonthlyEvents: React.FC = () => {
+  // useMemo memoizes a function, re-executing it only when the dependencies change. Otherwise it returns the cached result
   const thisMonthEvents = useMemo<EventItem[]>(
     () => mockEvents.filter((e) => isSameMonth(new Date(e.date), new Date())),
     []
