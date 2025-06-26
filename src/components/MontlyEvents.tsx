@@ -2,7 +2,7 @@
 import { useMemo } from "react";
 import type { EventItem } from "../../types/event";
 import { mockEvents } from "../../mocks/mockEvents";
-import { format, isSameMonth } from "date-fns";
+import { isSameMonth } from "date-fns";
 import EventCard from "./EventCard";
 
 const MonthlyEvents: React.FC = () => {
@@ -23,7 +23,7 @@ const MonthlyEvents: React.FC = () => {
         {thisMonthEvents.map((event) => (
           <li
             key={event.id}
-            className="hover:scale-101 transition-transform duration-300"
+            className="hover:scale-101 transition-transform duration-300 border-l-4 border-blue-500"
           >
             <EventCard event={event} />
           </li>
