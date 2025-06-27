@@ -117,8 +117,15 @@ export default function InternationalGuideKr2() {
               도움이 필요하신가요?
             </h3>
             <p className="text-gray-600 mb-4">
-              궁금한 점이 있다면 한국 국제학생회에 문의해 주세요.
+              질문이 있으시면 Korean International Student Organization에
+              문의해주세요.
             </p>
+            <a
+              href="mailto:uvakiso24@gmail.com"
+              className="text-blue-600 underline hover:text-blue-900"
+            >
+              uvakiso24@gmail.com
+            </a>
           </div>
 
           <div className="text-center">

@@ -124,6 +124,12 @@ export default function InternationalGuideEn2() {
               For any questions, please contact the Korean International Student
               Organization.
             </p>
+             <a
+              href="mailto:uvakiso24@gmail.com"
+              className="text-blue-600 underline hover:text-blue-900"
+            >
+              uvakiso24@gmail.com
+            </a>
           </div>
 
           <div className="text-center">
