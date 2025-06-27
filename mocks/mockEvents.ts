@@ -16,8 +16,8 @@ export const mockEvents: EventItem[] = [
   },
   {
     id: "3",
-    title: "Career Fair",
-    date: "2025-06-20",
-    description: "기업 채용 박람회 참가",
+    title: "한국으로 이삿짐 보내는 날!",
+    date: "2025-06-30",
+    description: "3년만에 한국🇰🇷",
   },
 ];

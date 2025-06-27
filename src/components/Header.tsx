@@ -46,11 +46,14 @@ const Header: FC = () => {
           <div className="flex items-center space-x-4">
             {/* 데스크탑용 네비게이션 링크 */}
             <nav className="hidden sm:flex space-x-6 absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 font-semibold">
-              <Link href="#" className="text-white hover:">
-                Test1
+              <Link href="/calendar" className="text-white hover:">
+                Calendar
               </Link>
-              <Link href="#" className="text-white hover:text-cyan-100">
-                Test2
+              <Link
+                href="/international-guide-en"
+                className="text-white hover:text-cyan-100"
+              >
+                Visa Guide
               </Link>
               <Link
                 href="#"
@@ -107,13 +110,13 @@ const Header: FC = () => {
                 href="/international-guide-en"
                 className="block text-white text-xl hover:underline"
               >
-                International Student Guide
+                Visa Guide
               </Link>
               <Link
-                href="#"
+                href="/calendar"
                 className="block text-white text-xl hover:underline"
               >
-                Test2
+                Calendar
               </Link>
               <Link
                 href="#"
