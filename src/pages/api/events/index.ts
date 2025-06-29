@@ -19,7 +19,7 @@ export default async function handler(
       .insert([req.body])
       .single();
     if (error){ 
-      console.error("Supabase insert error", error);
+      console.error("Supabase insert error", error); // 오류가 발생할땐 console 에서 오류를 확인하는게 제일 빠른 방법
       return res.status(500).json({ error: error.message })
     };
     return res.status(201).json(data);

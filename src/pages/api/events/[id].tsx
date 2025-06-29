@@ -18,10 +18,12 @@ export default async function handler(
   }
 
   if (req.method === "PUT") {
+    const eventId = parseInt(id as string, 10);
     const { data, error } = await supabase
       .from("events")
       .update(req.body)
-      .eq("id", id)
+      .eq("id", eventId)
+      .select()
       .single();
     if (error) return res.status(500).json({ error: error.message });
     return res.status(200).json(data);
