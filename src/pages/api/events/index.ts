@@ -18,7 +18,10 @@ export default async function handler(
       .from("events")
       .insert([req.body])
       .single();
-    if (error) return res.status(500).json({ error: error.message });
+    if (error){ 
+      console.error("Supabase insert error", error);
+      return res.status(500).json({ error: error.message })
+    };
     return res.status(201).json(data);
   }
 
