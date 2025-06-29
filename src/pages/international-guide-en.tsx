@@ -41,7 +41,7 @@ export default function InternationalGuideEn() {
             </svg>
           </div>
           <h1 className="text-4xl font-bold text-gray-800 mb-2">
-            Guide For Newly International Students
+            Guide For New International Students
           </h1>
           <p className="text-lg text-gray-600">
             step by step guide for F-1 & J-1 visa
