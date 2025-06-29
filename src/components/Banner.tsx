@@ -6,7 +6,7 @@ type BannerProps = {
 
 export default function Banner({ newsArray }: BannerProps) {
   return (
-    <div className="bg-white text py-2 px-4 flex items-center overflow-hidden">
+    <div className="bg-white text text-black py-2 px-4 flex items-center overflow-hidden">
       <motion.div
         className="inline-block whitespace-nowrap"
         animate={{ x: ["-100%", "100%"] }}
