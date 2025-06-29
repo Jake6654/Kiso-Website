@@ -4,7 +4,7 @@ import { supabase } from "../lib/supabaseClient";
 import dynamic from "next/dynamic";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
-import type { CalendarApi } from "@fullcalendar/core";
+import type { CalendarApi, EventApi } from "@fullcalendar/core";
 
 const FullCalendar = dynamic(() => import("@fullcalendar/react"), {
   ssr: false,
@@ -15,10 +15,13 @@ export default function CalendarPage() {
   const [calendarApi, setCalendarApi] = useState<CalendarApi | null>(null);
   const [currentTitle, setCurrentTitle] = useState<string>("");
 
-  // 모달 열림 상태
-  const [isOpen, setIsOpen] = useState(false);
+  // “Add” 모달 열림
+  const [isAddOpen, setIsAddOpen] = useState(false);
 
-  // 입력 폼 상태
+  // “Detail” 모달을 위한 선택된 이벤트 정보
+  const [selectedEvent, setSelectedEvent] = useState<null | EventApi>(null);
+
+  // Form state (Add/Update 공용)
   const [form, setForm] = useState({
     title: "",
     start: "",
@@ -30,12 +33,12 @@ export default function CalendarPage() {
     contact: "",
   });
 
-  // 이벤트 소스 객체를 한 번만 생성
+  // 이벤트 소스 객체 (메모이제이션)
   const eventSource = useMemo(
     () => ({
       url: "/api/events",
       method: "GET",
-      failure: () => alert("이벤트를 불러오는 데 실패했습니다"),
+      failure: () => alert("이벤트를 불러오는 데 실패했습니다."),
     }),
     []
   );
@@ -50,46 +53,68 @@ export default function CalendarPage() {
     setForm((f) => ({ ...f, [name]: value }));
   }
 
-  // 모달 제출 → Supabase에 저장
-  async function onSubmit(e: React.FormEvent) {
+  // Add 모달 제출 (새 이벤트)
+  async function handleAdd(e: React.FormEvent) {
     e.preventDefault();
     if (!calendarApi) return;
-
-    // 이스터에그: 12월 23일
-    const selected = new Date(form.start);
-    if (selected.getMonth() === 11 && selected.getDate() === 23) {
-      alert("🎉 웹 개발자 장재혁님의 생일입니다! 축하해주세요! 🎂");
-    }
 
     const res = await fetch("/api/events", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(form),
     });
-
-    if (!res.ok) {
-      alert("이벤트 저장에 실패했습니다.");
-      return;
+    if (res.ok) {
+      setIsAddOpen(false);
+      setForm({
+        title: "",
+        start: "",
+        end: "",
+        description: "",
+        type: "kiso",
+        location: "",
+        photo_url: "",
+        contact: "",
+      });
+    } else {
+      alert("저장에 실패했습니다.");
     }
-
-    // 모달 닫기 및 폼 리셋
-    setForm({
-      title: "",
-      start: "",
-      end: "",
-      description: "",
-      type: "kiso",
-      location: "",
-      photo_url: "",
-      contact: "",
-    });
-    setIsOpen(false);
   }
 
-  // 실시간 구독 → 새 이벤트 캘린더에 추가
+  // Detail 모달에서 삭제
+  async function handleDelete() {
+    if (!selectedEvent) return;
+    const res = await fetch(`/api/events/${selectedEvent.id}`, {
+      method: "DELETE",
+    });
+    if (res.ok) {
+      selectedEvent.remove();
+      setSelectedEvent(null);
+    } else {
+      alert("삭제에 실패했습니다.");
+    }
+  }
+
+  // Detail 모달에서 “Edit” 누르면 Add 모달로 전환 + 폼에 데이터 채우기
+  function handleEdit() {
+    if (!selectedEvent) return;
+    const { title, start, end, extendedProps } = selectedEvent;
+    setForm({
+      title,
+      start: (start as Date).toISOString().slice(0, 16),
+      end: end ? (end as Date).toISOString().slice(0, 16) : "",
+      description: extendedProps.description || "",
+      type: extendedProps.type || "kiso",
+      location: extendedProps.location || "",
+      photo_url: extendedProps.photo_url || "",
+      contact: extendedProps.contact || "",
+    });
+    setSelectedEvent(null);
+    setIsAddOpen(true);
+  }
+
+  // Realtime 구독 (새 이벤트 자동 추가)
   useEffect(() => {
     if (!calendarApi) return;
-
     const channel = supabase
       .channel("events-realtime")
       .on(
@@ -113,7 +138,6 @@ export default function CalendarPage() {
         }
       )
       .subscribe();
-
     return () => {
       supabase.removeChannel(channel);
     };
@@ -121,17 +145,15 @@ export default function CalendarPage() {
 
   return (
     <div className="flex flex-col h-screen">
-      {/* ─── 헤더 ─── */}
+      {/* 헤더 */}
       <header className="grid grid-cols-3 items-center bg-white px-6 py-4 shadow">
         <div className="flex items-center space-x-4">
           <span className="text-4xl">📅</span>
           <span className="text-4xl font-bold">KISO Calendar</span>
         </div>
-
         <div className="text-center text-4xl font-medium">
           {currentTitle || "-"}
         </div>
-
         <div className="flex justify-end items-center space-x-2 pr-6">
           <button
             onClick={() => calendarApi?.prev()}
@@ -152,7 +174,7 @@ export default function CalendarPage() {
             today
           </button>
           <button
-            onClick={() => setIsOpen(true)}
+            onClick={() => setIsAddOpen(true)}
             className="px-4 py-1 bg-[#1dba2f] text-white rounded hover:bg-green-600"
           >
             + Add
@@ -160,16 +182,17 @@ export default function CalendarPage() {
         </div>
       </header>
 
-      {/* ─── 캘린더 ─── */}
+      {/* 캘린더 */}
       <main className="flex-1">
         <FullCalendar
           plugins={[dayGridPlugin, interactionPlugin]}
           initialView="dayGridMonth"
           headerToolbar={false}
+          events={eventSource}
+          height="100%"
           showNonCurrentDates={false}
           fixedWeekCount={false}
-          height="100%"
-          events={eventSource}
+          eventClick={(info) => setSelectedEvent(info.event)}
           datesSet={(info) => {
             setCalendarApi(info.view.calendar);
             setCurrentTitle(info.view.title);
@@ -177,121 +200,64 @@ export default function CalendarPage() {
         />
       </main>
 
-      {/* ─── Add Event 모달 ─── */}
-      {isOpen && (
+      {/* Add Modal */}
+      {isAddOpen && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
           <form
-            onSubmit={onSubmit}
+            onSubmit={handleAdd}
             className="bg-white w-full max-w-lg p-6 rounded-lg shadow-lg space-y-4"
           >
-            <h2 className="text-2xl font-semibold">New Event Add</h2>
-
-            {/* Title */}
-            <div>
-              <label className="block font-medium">Title</label>
-              <input
-                name="title"
-                value={form.title}
-                onChange={onChange}
-                required
-                className="w-full border px-3 py-2 rounded"
-              />
-            </div>
-
-            {/* Start / End */}
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block font-medium">Start Date</label>
-                <input
-                  type="datetime-local"
-                  name="start"
-                  value={form.start}
-                  onChange={onChange}
-                  required
-                  className="w-full border px-3 py-2 rounded"
-                />
-              </div>
-              <div>
-                <label className="block font-medium">End Date</label>
-                <input
-                  type="datetime-local"
-                  name="end"
-                  value={form.end}
-                  onChange={onChange}
-                  className="w-full border px-3 py-2 rounded"
-                />
-              </div>
-            </div>
-
-            {/* Description */}
-            <div>
-              <label className="block font-medium">Description</label>
-              <textarea
-                name="description"
-                value={form.description}
-                onChange={onChange}
-                className="w-full border px-3 py-2 rounded"
-              />
-            </div>
-
-            {/* 기타 필드 */}
-            <div>
-              <label className="block font-medium">Event Type</label>
-              <select
-                name="type"
-                value={form.type}
-                onChange={onChange}
-                className="w-full border px-3 py-2 rounded"
-              >
-                <option value="kiso">KISO Event</option>
-                <option value="school">School Event</option>
-              </select>
-            </div>
-            <div>
-              <label className="block font-medium">Location</label>
-              <input
-                name="location"
-                value={form.location}
-                onChange={onChange}
-                className="w-full border px-3 py-2 rounded"
-              />
-            </div>
-            <div>
-              <label className="block font-medium">Photo Link</label>
-              <input
-                name="photo_url"
-                value={form.photo_url}
-                onChange={onChange}
-                className="w-full border px-3 py-2 rounded"
-              />
-            </div>
-            <div>
-              <label className="block font-medium">Contact Info</label>
-              <input
-                name="contact"
-                value={form.contact}
-                onChange={onChange}
-                className="w-full border px-3 py-2 rounded"
-              />
-            </div>
-
-            {/* 액션 버튼 */}
-            <div className="flex justify-end space-x-2 pt-4">
+            {/* ...폼 필드 (title,start,end,description...) */}
+            <div className="flex justify-end space-x-2">
               <button
                 type="button"
-                onClick={() => setIsOpen(false)}
-                className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
+                onClick={() => setIsAddOpen(false)}
+                className="px-4 py-2 bg-gray-200 rounded"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-green-600"
+                className="px-4 py-2 bg-blue-500 text-white rounded"
               >
                 Save
               </button>
             </div>
           </form>
+        </div>
+      )}
+
+      {/* Detail Modal */}
+      {selectedEvent && (
+        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
+          <div className="bg-white w-full max-w-md p-6 rounded-lg shadow-lg space-y-4">
+            <h3 className="text-xl font-semibold">{selectedEvent.title}</h3>
+            <p>{new Date(selectedEvent.start!).toLocaleString()}</p>
+            {selectedEvent.extendedProps.description && (
+              <p>{selectedEvent.extendedProps.description}</p>
+            )}
+            {/* 편집/삭제 버튼 */}
+            <div className="flex justify-end space-x-2 pt-4">
+              <button
+                onClick={handleEdit}
+                className="px-4 py-2 bg-yellow-500 text-white rounded"
+              >
+                Edit
+              </button>
+              <button
+                onClick={handleDelete}
+                className="px-4 py-2 bg-red-500 text-white rounded"
+              >
+                Delete
+              </button>
+              <button
+                onClick={() => setSelectedEvent(null)}
+                className="px-4 py-2 bg-gray-200 rounded"
+              >
+                Close
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>
