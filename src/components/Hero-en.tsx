@@ -15,7 +15,7 @@ export default function Hero() {
           Korean international students.
         </p>
         <Link
-          href="/about"
+          href="/timeline"
           className="inline-block bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow transition duration-200"
         >
           Learn More...

@@ -56,10 +56,10 @@ const Header: FC = () => {
                 Visa Guide
               </Link>
               <Link
-                href="#"
+                href="/timeline"
                 className="text-white hover:underline transition-colors duration-300"
               >
-                Test3
+                Timeline
               </Link>
               <Link href="#" className="text-white hover:underline">
                 Test3
@@ -119,10 +119,10 @@ const Header: FC = () => {
                 Calendar
               </Link>
               <Link
-                href="#"
+                href="/timeline"
                 className="block text-white text-xl hover:underline"
               >
-                Test3
+                Timeline
               </Link>
             </nav>
           </aside>
