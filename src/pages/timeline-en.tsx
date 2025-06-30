@@ -17,7 +17,7 @@ export default function TimelinePage() {
       </div>
       <div className="text-center mb-12">
         <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-600 rounded-full mb-4">
-          <FaClock className="text-3xl" />
+          <FaClock className="text-3xl text-white" />
         </div>
         <h1 className="text-4xl font-bold text-gray-800 mb-2">
           Timeline of KISO

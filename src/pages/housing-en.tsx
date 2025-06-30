@@ -13,7 +13,7 @@ export default function HousingEn() {
       </div>
       <div className="text-center mb-12">
         <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-600 rounded-full mb-4">
-          <Home className="text-3xl" />
+          <Home className="text-3xl text-white" />
         </div>
         <h1 className="text-4xl font-bold text-gray-800 mb-2">Housing Guide</h1>
         <p className="text-lg text-gray-600">
