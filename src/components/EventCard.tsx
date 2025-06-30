@@ -14,7 +14,7 @@ export default function EventCard({ event }: Props) {
     >
       <h3 className="text-lg font-semibold mb-2">{event.title}</h3>
       <p className="text-sm text-gray-500 mb-4">
-        {format(new Date(event.date), "yyyy-MM-dd")}
+        {format(new Date(event.start), "yyyy-MM-dd")}
       </p>
       {event.description && (
         <p className="text-gray-700 line-clamp-3">{event.description}</p>
