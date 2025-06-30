@@ -20,11 +20,11 @@ const FullCalendar = dynamic(() => import("@fullcalendar/react"), {
 });
 
 export default function CalendarPage() {
-  // ── FullCalendar API 인스턴스 & 현재 뷰 타이틀 ──
+  // FullCalendar API & current view title
   const [calendarApi, setCalendarApi] = useState<CalendarApi | null>(null);
   const [currentTitle, setCurrentTitle] = useState<string>("");
 
-  // ── “Add/Edit Event” 모달 열림 + 폼 상태 + 편집 대상 ID ──
+  // Add/Edit modal state & form
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [editEventId, setEditEventId] = useState<string | null>(null);
   const [form, setForm] = useState({
@@ -38,10 +38,10 @@ export default function CalendarPage() {
     contact: "",
   });
 
-  // ── “Detail” 모달용 선택된 이벤트 ──
+  // Detail modal state
   const [selectedEvent, setSelectedEvent] = useState<EventApi | null>(null);
 
-  // ── FullCalendar 이벤트 소스 메모이제이션 ──
+  // fetch events source
   const eventSource = useMemo(
     () => ({
       url: "/api/events",
@@ -51,7 +51,7 @@ export default function CalendarPage() {
     []
   );
 
-  // ── 폼 입력 핸들러 ──
+  // form change handler
   function onChange(
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
@@ -61,7 +61,7 @@ export default function CalendarPage() {
     setForm((f) => ({ ...f, [name]: value }));
   }
 
-  // ── Add 모달 열기 ──
+  // open add modal
   function openAddModal() {
     setEditEventId(null);
     setForm({
@@ -77,9 +77,10 @@ export default function CalendarPage() {
     setIsAddOpen(true);
   }
 
-  // ── Detail 모달 → Edit 모달 전환 ──
+  // open edit modal from detail
   function openEditModal() {
     if (!selectedEvent) return;
+
     const e = selectedEvent;
     setForm({
       title: e.title,
@@ -96,9 +97,10 @@ export default function CalendarPage() {
     setIsAddOpen(true);
   }
 
-  // ── Add/Edit 저장 핸들러 ──
+  // save (add or edit)
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
+    setIsAddOpen(false);
     if (!calendarApi) return;
 
     const isEdit = Boolean(editEventId);
@@ -116,7 +118,6 @@ export default function CalendarPage() {
     }
     const data = await res.json();
 
-    // 캘린더 UI 반영
     if (isEdit) {
       const ev = calendarApi.getEventById(editEventId!);
       if (ev) {
@@ -145,7 +146,7 @@ export default function CalendarPage() {
       });
     }
 
-    // 리셋
+    // reset form & close modal
     setForm({
       title: "",
       start: "",
@@ -157,10 +158,9 @@ export default function CalendarPage() {
       contact: "",
     });
     setEditEventId(null);
-    setIsAddOpen(false);
   }
 
-  // ── Detail 모달 삭제 핸들러 ──
+  // delete from detail
   async function handleDelete() {
     if (!selectedEvent) return;
     const id = selectedEvent.id;
@@ -173,7 +173,7 @@ export default function CalendarPage() {
     setSelectedEvent(null);
   }
 
-  // ── Supabase Realtime 구독: INSERT 시 자동 반영 ──
+  // realtime subscribe
   useEffect(() => {
     if (!calendarApi) return;
     const channel = supabase
@@ -203,7 +203,7 @@ export default function CalendarPage() {
 
   return (
     <div className="flex flex-col h-screen">
-      {/* ── 헤더 ── */}
+      {/* Header */}
       <header className="grid grid-cols-3 items-center bg-white px-6 py-4 shadow">
         <div className="flex items-center space-x-4">
           <span className="text-4xl">📅</span>
@@ -240,7 +240,7 @@ export default function CalendarPage() {
         </div>
       </header>
 
-      {/* ── 캘린더 ── */}
+      {/* Calendar */}
       <main className="flex-1">
         <FullCalendar
           plugins={[dayGridPlugin, interactionPlugin]}
@@ -258,16 +258,17 @@ export default function CalendarPage() {
         />
       </main>
 
-      {/* ── Add/Edit 모달 ── */}
+      {/* Add/Edit Modal */}
       {isAddOpen && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <form onSubmit={handleSave}>
-            <Card className="w-full max-w-lg">
+          <form onSubmit={handleSave} className="w-full max-w-lg">
+            <Card>
               <CardHeader>
-                <CardTitle>{editEventId ? "Edit Event" : "New Event Add"}</CardTitle>
+                <CardTitle>
+                  {editEventId ? "Edit Event" : "New Event Add"}
+                </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                {/* Title */}
                 <div>
                   <label className="block font-medium mb-1">Title</label>
                   <input
@@ -278,7 +279,6 @@ export default function CalendarPage() {
                     className="w-full border px-3 py-2 rounded"
                   />
                 </div>
-                {/* Start / End */}
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block font-medium mb-1">Start Date</label>
@@ -302,7 +302,6 @@ export default function CalendarPage() {
                     />
                   </div>
                 </div>
-                {/* Description */}
                 <div>
                   <label className="block font-medium mb-1">Description</label>
                   <textarea
@@ -312,7 +311,6 @@ export default function CalendarPage() {
                     className="w-full border px-3 py-2 rounded"
                   />
                 </div>
-                {/* Event Type */}
                 <div>
                   <label className="block font-medium mb-1">Event Type</label>
                   <select
@@ -325,7 +323,6 @@ export default function CalendarPage() {
                     <option value="school">School Event</option>
                   </select>
                 </div>
-                {/* Location */}
                 <div>
                   <label className="block font-medium mb-1">Location</label>
                   <input
@@ -335,7 +332,6 @@ export default function CalendarPage() {
                     className="w-full border px-3 py-2 rounded"
                   />
                 </div>
-                {/* Photo */}
                 <div>
                   <label className="block font-medium mb-1">Photo</label>
                   <input
@@ -345,7 +341,6 @@ export default function CalendarPage() {
                     className="w-full border px-3 py-2 rounded"
                   />
                 </div>
-                {/* Contact Info */}
                 <div>
                   <label className="block font-medium mb-1">Contact Info</label>
                   <input
@@ -379,7 +374,7 @@ export default function CalendarPage() {
         </div>
       )}
 
-      {/* ── Detail 모달 ── */}
+      {/* Detail Modal */}
       {selectedEvent && (
         <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
           <Card className="w-full max-w-md">
@@ -387,18 +382,18 @@ export default function CalendarPage() {
               <CardTitle>Event Details</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <h3 className="text-lg font-semibold">{selectedEvent.title}</h3>
+              <h3 className="text-lg font-semibold">
+                {selectedEvent.title}
+              </h3>
               <p className="text-gray-600">
                 {new Date(selectedEvent.start!).toLocaleString()}
               </p>
-             
-                {selectedEvent.extendedProps.description}
-             
+              <p>{selectedEvent.extendedProps.description}</p>
             </CardContent>
             <CardFooter className="flex justify-end space-x-2">
               <button
                 onClick={openEditModal}
-                className="px-4 py-2 bg text-white bg-[#cad32b]  rounded hover:bg-[#919554]"
+                className="px-4 py-2 bg-[#cad32b] text-white rounded hover:bg-[#919554]"
               >
                 Edit
               </button>
