@@ -8,7 +8,7 @@ export const users: User[] = [
   },
   {
     img: "/images/vice-president.jpeg",
-    name: "Sungyun Jin",
+    name: "Steve Jin",
     role: "Vice President",
   },
   {

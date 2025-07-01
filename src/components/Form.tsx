@@ -1,4 +1,4 @@
-import { FaInstagram, FaYoutube } from "react-icons/fa";
+import { FaInstagram, FaYoutube, FaGithub } from "react-icons/fa";
 
 const Form: React.FC = () => {
   return (
@@ -48,6 +48,37 @@ const Form: React.FC = () => {
           > */}
             <FaYoutube />
           {/* </a> */}
+        </div>
+
+        {/* Developer credits */}
+        <div className="pt-4 border-t border-gray-200">
+          <p className="text-sm text-gray-500 mb-2">Developed by:</p>
+          <div className="flex flex-col space-y-1 text-sm">
+            <div className="flex items-center space-x-2">
+              <span className="text-gray-600">Jaehyuk Chang</span>
+              <a
+                href="https://github.com/Jake6654"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Jaehyuk Chang's GitHub"
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <FaGithub />
+              </a>
+            </div>
+            <div className="flex items-center space-x-2">
+              <span className="text-gray-600">Steve Jin</span>
+              <a
+                href="https://github.com/hiimstevejin"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Steve Jin's GitHub"
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <FaGithub />
+              </a>
+            </div>
+          </div>
         </div>
       </div>
 
