@@ -46,7 +46,7 @@ const Header: FC = () => {
           <div className="flex items-center space-x-4">
             {/* 데스크탑용 네비게이션 링크 */}
             <nav className="hidden sm:flex space-x-6 absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 font-semibold">
-              <Link href="/calendar" className="text-white hover:">
+              <Link href="/calendar" className="text-white hover:text-cyan-100">
                 Calendar
               </Link>
               <Link
@@ -57,15 +57,12 @@ const Header: FC = () => {
               </Link>
               <Link
                 href="/timeline-en"
-                className="text-white hover:underline transition-colors duration-300"
+                className="text-white hover:text-cyan-100"
               >
                 Timeline
               </Link>
-              <Link href="/housing-en" className="text-white hover:underline">
+              <Link href="/housing-en" className="text-white hover:text-cyan-100">
                 Housing
-              </Link>
-              <Link href="#" className="text-white hover:underline">
-                Test3
               </Link>
             </nav>
 
@@ -108,19 +105,19 @@ const Header: FC = () => {
             <nav className="flex-1 px-4 py-6 space-y-4">
               <Link
                 href="/international-guide-en"
-                className="block text-white text-xl hover:underline"
+                className="block text-white text-xl hover:text-cyan-100"
               >
                 Visa Guide
               </Link>
               <Link
                 href="/calendar"
-                className="block text-white text-xl hover:underline"
+                className="block text-white text-xl hover:text-cyan-100"
               >
                 Calendar
               </Link>
               <Link
                 href="/timeline-en"
-                className="block text-white text-xl hover:underline"
+                className="block text-white text-xl hover:text-cyan-100"
               >
                 Timeline
               </Link>
